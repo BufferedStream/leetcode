@@ -23,4 +23,52 @@ package ninetyNineProblems;
  * }
  */
 public class addTwoNumbers {
+
+    public class ListNode {
+       int val;
+       ListNode next;
+       ListNode(int x) { val = x; }
+    }
+
+    //[2,4,3]
+    //[5,6,4]
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+
+        if(l1.val + getVal(l2) > 9) {
+            l1.val = (l1.val + getVal(l2)) % 10;
+
+            if(l1.next == null) {
+                l1.next = new ListNode(1);
+                if(l2.next == null) {
+                    return l1;
+                }
+            } else if(l2.next == null){
+                l2.next = new ListNode(1);
+            } else {
+                l1.next.val += 1;
+            }
+            addTwoNumbers(l1.next, l2.next);
+
+        } else {
+            l1.val = (l1.val + getVal(l2)) % 10;
+
+            if(l2.next == null) {
+                return l1;
+            } else {
+                if(l1.next == null) {
+                    l1.next = new ListNode(0);
+                    addTwoNumbers(l1.next, l2.next);
+                } else {
+                    addTwoNumbers(l1.next, l2.next);
+                }
+            }
+
+        }
+
+        return l1;
+    }
+
+    public int getVal(ListNode l) {
+        return l == null ? 0 : l.val;
+    }
 }
