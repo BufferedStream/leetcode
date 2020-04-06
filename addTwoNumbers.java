@@ -1,5 +1,3 @@
-package ninetyNineProblems;
-
 /**
  * @auther zengbo on 2020/3/30
  * 2. 两数相加
