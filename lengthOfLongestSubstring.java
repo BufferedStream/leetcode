@@ -1,5 +1,7 @@
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @auther zengbo on 2020/4/5
@@ -135,7 +137,7 @@ class lengthOfLongestSubstring {
         return length;
     }
 
-    //耗时增加了。。。
+    //耗时增加了，在for循环内部使用 + 来拼接string会额外消耗性能
     public int lengthOfLongestSubstring5(String s) {
         int length = 0;
         String temp = "";
@@ -162,5 +164,132 @@ class lengthOfLongestSubstring {
         }
 
         return length;
+    }
+
+    //比上一个性能有改善，但不如使用hashmap
+    public int lengthOfLongestSubstring6(String s) {
+        int length = 0;
+        StringBuilder temp = new StringBuilder();
+        if(s.equals(" ")) {
+            return 1;
+        }
+
+        for(int i = 0; i < s.length(); i++) {
+            if(temp.indexOf(String.valueOf(s.charAt(i))) > -1) {
+                if(temp.length() > length) {
+                    length = temp.length();
+                }
+
+                i = s.lastIndexOf(String.valueOf(temp), i - 1) + 1;
+                temp = new StringBuilder();
+                temp.append(s.charAt(i));
+
+            } else {
+                temp.append(s.charAt(i));
+                if(i == s.length() - 1 && temp.length() > length) {
+                    length = temp.length();
+                }
+            }
+        }
+
+        return length;
+    }
+
+    //Math.max没有优化效果
+    public int lengthOfLongestSubstring7(String s) {
+        int length = 0;
+        Map map = new HashMap();
+        if(s.equals(" ")) {
+            return 1;
+        }
+
+        for(int i = 0; i < s.length(); i++) {
+            if(map.containsKey(s.charAt(i))) {
+                length = Math.max(length, map.size());
+
+                i = (int) map.get(s.charAt(i)) + 1;
+                map = new HashMap();
+                map.put(s.charAt(i), i);
+
+            } else {
+                map.put(s.charAt(i), i);
+                if(i == s.length() - 1) {
+                    length = Math.max(length, map.size());
+                }
+            }
+        }
+
+        return length;
+    }
+
+    //运用滑动窗口的概念
+    public int lengthOfLongestSubstring8(String s) {
+        int ans = 0;
+        Map map = new HashMap();
+
+        for(int i = 0, j = 0; i < s.length() && j < s.length(); ) {
+            if(!map.containsKey(s.charAt(i))) {
+                map.put(s.charAt(i++), i);
+                ans = Math.max(ans, map.size());
+            } else {
+                map.remove(s.charAt(j++));
+            }
+        }
+
+        return ans;
+    }
+
+    //改成while形式
+    public int lengthOfLongestSubstring9(String s) {
+        int ans = 0, i = 0, j = 0;
+        int length = s.length();
+        Map map = new HashMap();
+
+        while(i < length && j < length) {
+            if(!map.containsKey(s.charAt(i))) {
+                map.put(s.charAt(i++), i);
+                ans = Math.max(ans, map.size());
+            } else {
+                map.remove(s.charAt(j++));
+            }
+        }
+
+        return ans;
+    }
+
+    //使用hashset
+    public int lengthOfLongestSubstring10(String s) {
+        int n = s.length();
+        Set<Character> set = new HashSet<>();
+        int ans = 0, i = 0, j = 0;
+        while (i < n && j < n) {
+            // try to extend the range [i, j]
+            if (!set.contains(s.charAt(j))){
+                set.add(s.charAt(j++));
+                ans = Math.max(ans, j - i);
+            }
+            else {
+                set.remove(s.charAt(i++));
+            }
+        }
+        return ans;
+    }
+
+    //优化滑动窗口的跳跃
+    public int lengthOfLongestSubstring11(String s) {
+        int ans = 0, i = 0, j = 0;
+        int length = s.length();
+        Map map = new HashMap();
+
+        while(i < length && j < length) {
+            if(!map.containsKey(s.charAt(i))) {
+                map.put(s.charAt(i++), i);
+                ans = Math.max(ans, map.size());
+            } else {
+                map.remove(s.charAt(j++));
+            }
+        }
+
+        return ans;
     }
 }
