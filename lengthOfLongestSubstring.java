@@ -222,7 +222,8 @@ class lengthOfLongestSubstring {
         return length;
     }
 
-    //运用滑动窗口的概念
+    //运用滑动窗口的概念，针对了前面所使用方法需要重复创建map的缺点进行了优化
+    //并不需要重复创建map来临时记录子串的大小，只需要保存两个指针的位置
     public int lengthOfLongestSubstring8(String s) {
         int ans = 0;
         Map map = new HashMap();
@@ -277,19 +278,59 @@ class lengthOfLongestSubstring {
 
     //优化滑动窗口的跳跃
     public int lengthOfLongestSubstring11(String s) {
-        int ans = 0, i = 0, j = 0;
+        int ans = 0;
         int length = s.length();
-        Map map = new HashMap();
+        Map<Character, Integer> map = new HashMap();
 
-        while(i < length && j < length) {
-            if(!map.containsKey(s.charAt(i))) {
-                map.put(s.charAt(i++), i);
-                ans = Math.max(ans, map.size());
+        for(int i = 0, j = 0; j < length; j++ ) {
+            if (map.containsKey(s.charAt(j))) {
+                i = Math.max(map.get(s.charAt(j)), i);
+            }
+            ans = Math.max(ans, j - i + 1);
+            map.put(s.charAt(j), j + 1);
+        }
+
+        return ans;
+    }
+
+    //用泛型优化，没什么用
+    public int lengthOfLongestSubstring12(String s) {
+        int length = 0;
+        Map<Character, Integer> map = new HashMap();
+        if(s.equals(" ")) {
+            return 1;
+        }
+
+        for(int i = 0; i < s.length(); i++) {
+            if(map.containsKey(s.charAt(i))) {
+                if(map.size() > length) {
+                    length = map.size();
+                }
+
+                i = map.get(s.charAt(i)) + 1;
+                map = new HashMap();
+                map.put(s.charAt(i), i);
+
             } else {
-                map.remove(s.charAt(j++));
+                map.put(s.charAt(i), i);
+                if(i == s.length() - 1 && map.size() > length) {
+                    length = map.size();
+                }
             }
         }
 
+        return length;
+    }
+
+    public int lengthOfLongestSubstring13(String s) {
+        int n = s.length(), ans = 0;
+        int[] index = new int[128]; // current index of character
+        // try to extend the range [i, j]
+        for (int j = 0, i = 0; j < n; j++) {
+            i = Math.max(index[s.charAt(j)], i);
+            ans = Math.max(ans, j - i + 1);
+            index[s.charAt(j)] = j + 1;
+        }
         return ans;
     }
 }
